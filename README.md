@@ -13,7 +13,7 @@ This repository contains examples of workflows using the Nix Block, showcasing i
 
 1. **Clone the Repository**: Clone this repository to your local machine using the following command:
    ```bash
-   git clone https://github.com/your-username/nix-n8n-workflows.git
+   git clone https://github.com/thenexlabs/nix-n8n-workflows.git
    ```
 2. **Install Dependencies**: Install any necessary dependencies for running the workflows.
 3. **Run Examples**: Follow the instructions in each example folder to set up and run the workflows.
