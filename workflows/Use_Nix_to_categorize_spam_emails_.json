@@ -1,0 +1,279 @@
+{
+  "name": "Use Nix to categorize spam emails.",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        20
+      ],
+      "id": "c063b4b5-0efd-4348-b0c3-166d082649c9",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CGmRSCQ8G2PxMhtW",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "I0nUORqYTwDFZa51",
+          "mode": "list",
+          "cachedResultName": "Nix Block"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        340,
+        140
+      ],
+      "id": "678b885e-5304-46af-a888-73323747d440",
+      "name": "Nix Block",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78b78cf7-943f-4f4f-91c5-c71efeb7d78a",
+              "name": "apiKey",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "0ee0f3f2-2954-414b-a701-4ca14e3c5be2",
+              "name": "messageId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "3d047460-d218-4408-aa7a-466f55a5de24",
+              "name": "chatInput",
+              "value": "=Is this likely a phishing/spam email? \n\n- email snippet: {{ $json.snippet }}\n- email from: {{ $json.From }}\n- email to: {{ $json.To }}\n- email subject: {{ $json.Subject }}\n- email size estimate: {{ $json.sizeEstimate }}\n\n- OUTPUT A BOOLEAN ONLY\n- ONLY OUTPUT true if spam and false if not.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        280,
+        -100
+      ],
+      "id": "a9b1b1df-700a-4b9e-bc17-f9f4256f300a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.messageId }}",
+        "labelIds": [
+          "SPAM"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1220,
+        -300
+      ],
+      "id": "c40e7341-1059-4c28-8645-0687ad652377",
+      "name": "Gmail",
+      "webhookId": "d73b0a56-b273-49da-858b-aa886393437a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CGmRSCQ8G2PxMhtW",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        500,
+        -240
+      ],
+      "id": "fe3c71f8-2dbc-428d-a112-402bfa42bec7",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        660,
+        -120
+      ],
+      "id": "04876697-6a33-48ef-be3d-d24a94986d33",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Combine properties from both objects into a single object \nconst combinedObject = Object.assign({}, ...$input.first().json.data); \n// Return the combined object as a single item \nreturn [combinedObject];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        820,
+        -240
+      ],
+      "id": "5727b54f-920c-4b45-b033-bdcd756e5481",
+      "name": "Combine data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "142fa3d7-b8b3-4fdb-bafc-e61bc6d2927f",
+              "leftValue": false,
+              "rightValue": "={{ $json.output }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1020,
+        -120
+      ],
+      "id": "f67dc74c-43f9-4f9c-a2c8-a815346e1cf9",
+      "name": "isSpam"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Nix Block",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nix Block": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Combine data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine data": {
+      "main": [
+        [
+          {
+            "node": "isSpam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "isSpam": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d6c958e6-080d-462f-b365-036f9ac2c883",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "sk5Fv5lZ900miQqj",
+  "tags": []
+}

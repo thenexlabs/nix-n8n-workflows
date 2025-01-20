@@ -1,0 +1,261 @@
+{
+  "name": "Nix Block",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "44885368-36f4-4f8c-a911-2347226e2190",
+      "name": "When clicking ‘Test workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.thenex.world/nix",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\"Content-Type\": \"application/json\"}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "={{ $json.apiKey }}"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.chatInput }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        300,
+        -140
+      ],
+      "id": "9599fd8d-4bec-4c47-a057-49c4a3fff312",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -140
+      ],
+      "id": "dc94efb5-91a0-4d2b-9cd0-e72b1e97498d",
+      "name": "When chat message received",
+      "webhookId": "ec75b9db-22e6-4bb3-88c1-66afced7d2e5",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e41e3031-3669-432b-a669-8ece63e0a2a4",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        740,
+        -140
+      ],
+      "id": "7dee0bc4-0e48-4d45-999c-dfbd86e0ac09",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = items[0].json.content;\n\nreturn [{json: {output}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -140
+      ],
+      "id": "8419fb72-74ad-4c18-8886-967580938885",
+      "name": "Convert to output"
+    },
+    {
+      "parameters": {
+        "jsCode": "const nixResponse = JSON.parse(items[0].json.data).result.kwargs;\n\nreturn nixResponse;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        -140
+      ],
+      "id": "ce739fca-42d4-4a68-a42f-cfbbfec76dc9",
+      "name": "convert json string to object"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -280
+      ],
+      "id": "de233ffa-d892-4b6a-997f-5a7af8b51db8",
+      "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        140,
+        -440
+      ],
+      "id": "56bbc18c-ab38-4962-b9e2-6f6f9a1ebb7b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        300,
+        -320
+      ],
+      "id": "6655fcbb-cf7e-4d72-8efe-d87c10510153",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Combine properties from both objects into a single object \nconst combinedObject = Object.assign({}, ...$input.first().json.data); \n// Return the combined object as a single item \nreturn [combinedObject];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        -440
+      ],
+      "id": "751be7fe-f819-4cad-9b03-b100faaed843",
+      "name": "Combine data"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "convert json string to object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Convert to output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert json string to object": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Combine data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine data": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1fd78f82-ee9c-4f3d-ba5c-bfaa409c8dc1",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "I0nUORqYTwDFZa51",
+  "tags": []
+}

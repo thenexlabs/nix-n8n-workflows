@@ -1,0 +1,506 @@
+{
+  "name": "Schedule Nix to read event logs and alert team",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -600,
+        -460
+      ],
+      "id": "3a4f0973-0572-4bcb-b2d8-9c19aa304f1b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "I0nUORqYTwDFZa51",
+          "mode": "list",
+          "cachedResultName": "Nix Block"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -380
+      ],
+      "id": "55791059-eef0-4015-93eb-3607c0c817ec",
+      "name": "Nix Block",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78b78cf7-943f-4f4f-91c5-c71efeb7d78a",
+              "name": "apiKey",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "3d047460-d218-4408-aa7a-466f55a5de24",
+              "name": "chatInput",
+              "value": "=What are my most serious security alerts/events in the past hour?\n\n**\"Consistently output security events in the following format, with no additional text or characters:**\n\n[{ \"events\": [] }]\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -420,
+        -360
+      ],
+      "id": "6d810691-0ee8-4c59-a979-eb735a1ec31e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "output",
+        "binaryPropertyName": "=Nix Hourly Report ({{ `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${new Date().getDate().toString().padStart(2, '0')} ${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}` }})",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        140,
+        60
+      ],
+      "id": "555ba974-884e-49d7-839a-36a1b08f3f17",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8b88a791-764a-4d56-876e-91e724ef6380",
+              "leftValue": "={{ $json.output.toBoolean() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        -400
+      ],
+      "id": "86d0a626-d6d6-4d6d-bde5-4e5a9237fde8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=- ONLY OUTPUT a single true OR false boolean\n- OUTPUT true IF THE NIXGUARD DATA is worth notifying/alerting team about\n\nNIXGUARD DATA: {{ $('Nix Block').item.json.output }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        140,
+        -380
+      ],
+      "id": "76309adc-398a-489b-97f4-a855a47d4ada",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -160
+      ],
+      "id": "96c47952-fc3d-4d57-a7c2-d6bb5dacfe7a",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "taskList"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        780,
+        -440
+      ],
+      "id": "5fee232b-3be3-4b2b-a48a-c9dc70211b50",
+      "name": "ClickUp",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        -600
+      ],
+      "id": "342816dd-8260-4fd0-b7e0-c86e4ac329f1",
+      "name": "Gmail",
+      "webhookId": "a5ac45f9-de60-4e87-b0ca-27034e073796",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CGmRSCQ8G2PxMhtW",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "boardItem",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.mondayCom",
+      "typeVersion": 1,
+      "position": [
+        780,
+        -260
+      ],
+      "id": "32fc6579-78a4-4169-9769-34a173aa12ba",
+      "name": "Monday.com",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        780,
+        -40
+      ],
+      "id": "47c187b1-8c04-46e3-af30-94297e4c45b2",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PJvgWbODZcBULN05",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.microsoftToDo",
+      "typeVersion": 1,
+      "position": [
+        780,
+        160
+      ],
+      "id": "15b78533-ead8-4439-bc1d-991604f6de94",
+      "name": "Microsoft To Do",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        780,
+        380
+      ],
+      "id": "182ebe8a-4908-4a06-8a80-8a556522b3e2",
+      "name": "Slack",
+      "webhookId": "b7db6b26-9c8d-4de6-86f6-100f5e7ae74d",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "channelMessage",
+        "teamId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftTeams",
+      "typeVersion": 2,
+      "position": [
+        780,
+        600
+      ],
+      "id": "0a804f9a-f4c5-4d48-ac41-90f255ac0256",
+      "name": "Microsoft Teams",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const outputString = $input.first().json.output;\n\nconst removeFirstJSONSubstring = (str) => {\n  const jsonIndex = str.indexOf('json');\n  if (jsonIndex === -1) {\n    throw new Error('Substring \"json\" not found');\n  }\n  return str.substring(0, jsonIndex) + str.substring(jsonIndex + 4);\n};\n\n// Replace single quotes inside double-quoted strings with escaped double quotes\nconst cleanedString = removeFirstJSONSubstring(outputString).split(/```/); \nconsole.log(cleanedString)\n// Parse the cleaned string as JSON \nconst jsonObject = JSON.parse(cleanedString[1]);\nconsole.log(jsonObject)\n// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst events = [];\nfor (const event of jsonObject.events) {\n  events.push({ json: { event } });\n}\n\nreturn events;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        -540
+      ],
+      "id": "507562e7-6d74-48be-b214-62f2135f7dcb",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "I0nUORqYTwDFZa51",
+          "mode": "list",
+          "cachedResultName": "Nix Block"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        380,
+        -740
+      ],
+      "id": "7a302671-953f-468d-b114-42ca41b88c55",
+      "name": "Nix Block1",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78b78cf7-943f-4f4f-91c5-c71efeb7d78a",
+              "name": "apiKey",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "3d047460-d218-4408-aa7a-466f55a5de24",
+              "name": "chatInput",
+              "value": "=- ONLY OUTPUT a single true OR false boolean\n- OUTPUT true IF THE NIXGUARD DATA is worth notifying/alerting team about\n\nNIXGUARD DATA: {{ $('Nix Block').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        -720
+      ],
+      "id": "c4ee5c65-0259-479b-88c5-8a84a60d0fa7",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Nix Block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nix Block": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        []
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "ClickUp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Monday.com",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Microsoft To Do",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Microsoft Teams",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Nix Block1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nix Block1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "58a37acf-afe3-4967-ae72-5c30b11b5985",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "G2s4Ot6nLCrCQzQE",
+  "tags": []
+}

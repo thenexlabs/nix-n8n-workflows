@@ -1,0 +1,136 @@
+{
+  "name": "Basic Nix Block Usage",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -40
+      ],
+      "id": "3fb21219-e9e9-4883-bb1e-139a58be5ecf",
+      "name": "When clicking ‘Test workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "I0nUORqYTwDFZa51",
+          "mode": "list",
+          "cachedResultName": "Nix Block"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        160
+      ],
+      "id": "81f977af-7885-4a88-bd4f-66ff4e059d8e",
+      "name": "Nix Block"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        160
+      ],
+      "id": "6e53f8f1-d3a9-4916-adb2-90e9ce59aa20",
+      "name": "When chat message received",
+      "webhookId": "0045da59-79ea-4ff6-acfc-7e529d08b4b4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78b78cf7-943f-4f4f-91c5-c71efeb7d78a",
+              "name": "apiKey",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "0ee0f3f2-2954-414b-a701-4ca14e3c5be2",
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "a0f7d4d4-0ac7-474e-b87a-b87536f5e303",
+              "name": "action",
+              "value": "={{ $json.action }}",
+              "type": "string"
+            },
+            {
+              "id": "3d047460-d218-4408-aa7a-466f55a5de24",
+              "name": "chatInput",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        40
+      ],
+      "id": "4413b8db-8325-402b-bdb5-3831c9bae806",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nix Block": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Nix Block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "32a54692-7e77-46bc-85f9-378ea0afc108",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "kHAWbfQ24OCl9nIJ",
+  "tags": []
+}
