@@ -115,8 +115,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        560,
-        -400
+        660,
+        -740
       ],
       "id": "86d0a626-d6d6-4d6d-bde5-4e5a9237fde8",
       "name": "If"
@@ -164,8 +164,8 @@
       "type": "n8n-nodes-base.clickUp",
       "typeVersion": 1,
       "position": [
-        780,
-        -440
+        1200,
+        -500
       ],
       "id": "5fee232b-3be3-4b2b-a48a-c9dc70211b50",
       "name": "ClickUp",
@@ -178,8 +178,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        660,
-        -600
+        1080,
+        -660
       ],
       "id": "342816dd-8260-4fd0-b7e0-c86e4ac329f1",
       "name": "Gmail",
@@ -200,8 +200,8 @@
       "type": "n8n-nodes-base.mondayCom",
       "typeVersion": 1,
       "position": [
-        780,
-        -260
+        1200,
+        -320
       ],
       "id": "32fc6579-78a4-4169-9769-34a173aa12ba",
       "name": "Monday.com",
@@ -224,8 +224,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        780,
-        -40
+        1200,
+        -100
       ],
       "id": "47c187b1-8c04-46e3-af30-94297e4c45b2",
       "name": "Google Sheets",
@@ -245,8 +245,8 @@
       "type": "n8n-nodes-base.microsoftToDo",
       "typeVersion": 1,
       "position": [
-        780,
-        160
+        1200,
+        100
       ],
       "id": "15b78533-ead8-4439-bc1d-991604f6de94",
       "name": "Microsoft To Do",
@@ -259,8 +259,8 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        780,
-        380
+        1200,
+        320
       ],
       "id": "182ebe8a-4908-4a06-8a80-8a556522b3e2",
       "name": "Slack",
@@ -285,8 +285,8 @@
       "type": "n8n-nodes-base.microsoftTeams",
       "typeVersion": 2,
       "position": [
-        780,
-        600
+        1200,
+        540
       ],
       "id": "0a804f9a-f4c5-4d48-ac41-90f255ac0256",
       "name": "Microsoft Teams",
@@ -313,12 +313,13 @@
           "mode": "list",
           "cachedResultName": "Nix Block"
         },
+        "mode": "each",
         "options": {}
       },
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.1,
       "position": [
-        380,
+        420,
         -740
       ],
       "id": "7a302671-953f-468d-b114-42ca41b88c55",
@@ -340,7 +341,7 @@
             {
               "id": "3d047460-d218-4408-aa7a-466f55a5de24",
               "name": "chatInput",
-              "value": "=- ONLY OUTPUT a single true OR false boolean\n- OUTPUT true IF THE NIXGUARD DATA is worth notifying/alerting team about\n\nNIXGUARD DATA: {{ $('Nix Block').item.json.output }}",
+              "value": "=- ONLY OUTPUT a single true OR false boolean\n- OUTPUT true IF THE NIXGUARD DATA is worth notifying/alerting team about\n- Above a level 7 is worth notifying.\n- Below a level 7 is not.\n- NIXGUARD DATA: {{ JSON.stringify($json.event) }}",
               "type": "string"
             }
           ]
@@ -497,7 +498,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "58a37acf-afe3-4967-ae72-5c30b11b5985",
+  "versionId": "25b3094c-6970-4e14-959d-65ef3d390fbe",
   "meta": {
     "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
   },

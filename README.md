@@ -4,19 +4,36 @@ This repository contains examples of workflows using the Nix Block, showcasing i
 
 ## Contents
 
-1. **Basic Example**: Demonstrates how to read Gmails, categorize them as spam, and label them accordingly.
-2. **Categorizing Emails**: Identifies spam emails and labels them.
-3. **Scheduled Nix Block**: Runs a Nix Block every hour and notifies team members via popular apps about alerts.
-4. **Community Contributions**: Share your own workflows with the community!
+1. **Workflows**: collection of workflows showcasing Nix.
+   1. **Nix Block**: Workflow made to be used within other workflows.
+   1. **Basic Nix Block Usage Example**: Demonstrates how to use a Nix Block.
+   2. **Categorizing Emails with Nix Example**: Identifies spam emails and labels them.
+   3. **Scheduled Nix Block Example**: Runs a Nix Block every hour and notifies team members via popular apps about alerts.
+2. **Community Contributions**: Share your own workflows with the community!
 
 ## Getting Started
 
-1. **Clone the Repository**: Clone this repository to your local machine using the following command:
-   ```bash
-   git clone https://github.com/thenexlabs/nix-n8n-workflows.git
-   ```
-2. **Install Dependencies**: Install any necessary dependencies for running the workflows.
-3. **Run Examples**: Follow the instructions in each example folder to set up and run the workflows.
+### For Importing Workflows:
+
+1. **Import Workflows into n8n**:
+   - **Import via URL**:
+     1. Open your n8n instance and log in.
+     2. Go to the "Workflows" section.
+     3. Click on the "Import" button.
+     4. Select the "URL" option.
+     5. Enter the raw GitHub URL of the workflow you want to import, for example:
+        ```plaintext
+        https://raw.githubusercontent.com/thenexlabs/nix-n8n-workflows/main/workflows/example_workflow.json
+        ```
+     6. Click "Import" to add the workflow to your n8n instance.
+
+   - **Import via File**:
+     1. Open your n8n instance and log in.
+     2. Go to the "Workflows" section.
+     3. Click on the "Import" button.
+     4. Select the "File" option.
+     5. Click "Choose File" and select the JSON file of the workflow you want to import from your local machine.
+     6. Click "Import" to add the workflow to your n8n instance.
 
 ## Contributing
 
