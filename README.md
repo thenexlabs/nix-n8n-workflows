@@ -2,6 +2,12 @@
 
 This repository contains examples of workflows using the Nix Block, showcasing its versatility and integration with various applications.
 
+## n8n is automatically hosted privately for all NixGuard tiers above Basic
+
+## host yourself - n8n AI Starter Kit
+
+Check out the [n8n Template AI Starter Kit](https://docs.n8n.io/hosting/starter-kits/ai-starter-kit/) to get started with AI workflows in n8n.
+
 ## Contents
 
 1. **Workflows**: collection of workflows showcasing Nix.
