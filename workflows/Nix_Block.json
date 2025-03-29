@@ -16,7 +16,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.thenex.world/nix",
+        "url": "https://nix.thenex.world",
         "sendHeaders": true,
         "specifyHeaders": "json",
         "jsonHeaders": "{\"Content-Type\": \"application/json\"}",
